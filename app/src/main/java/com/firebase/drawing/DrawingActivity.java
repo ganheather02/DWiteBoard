@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.support.v7.app.ActionBarActivity;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -43,7 +44,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     private Firebase mFirebaseRef; // Firebase base URL
     private Firebase mMetadataRef;
     private Firebase mSegmentsRef;
-    private Firebase mRootRef;
+    private Firebase mPictureRef;
 
     private ValueEventListener mConnectedListener;
 
@@ -74,7 +75,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
         mBoardId = boardId;
         mMetadataRef = mFirebaseRef.child("boardmetas").child(boardId);
         mSegmentsRef = mFirebaseRef.child("boardsegments").child(mBoardId);
-        mRootRef = new Firebase("https://dwiteboardapp.firebaseio.com");
+        mPictureRef = mFirebaseRef.child("boardmetas").child(mBoardId).child("pictureid");
         mMetadataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -121,16 +122,44 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
             }
         });
 
-        Firebase picturesRef = mRootRef.child("pictureid");
+        mPictureRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                fetchedPicture = dataSnapshot.getValue(String.class);
+                if(fetchedPicture != null) {
+                    try {
+                        fetchedBitmap = decodeFromBase64(fetchedPicture);
+
+                        if(fetchedBitmap != null){Toast.makeText(DrawingActivity.this, "Picture Decoded", Toast.LENGTH_SHORT).show();}
+                        DisplayMetrics metrics = new DisplayMetrics();
+
+                        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                        int height = metrics.heightPixels;
+                        int width = metrics.widthPixels;
+
+                        resizedBitmap = myResizedBitmap(fetchedBitmap, width, height);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Toast.makeText(DrawingActivity.this, "Data Cancel (Picture)", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        /*Firebase picturesRef = mRootRef.child("pictureid");
         picturesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 fetchedPicture = dataSnapshot.getValue(String.class);
                 Toast.makeText(DrawingActivity.this, "Fetched Picture", Toast.LENGTH_SHORT).show();
-                String foo = fetchedPicture.substring(0, Math.min(13, fetchedPicture.length()));
-                Toast.makeText(DrawingActivity.this, foo, Toast.LENGTH_SHORT).show();
+                //Log.v("E_VALUE", fetchedPicture);
                 shouldChangeBackground = true;
-                /*try{
+                try{
                     fetchedBitmap = decodeFromBase64(fetchedPicture);
                     //DisplayMetrics metrics = new DisplayMetrics();
 
@@ -142,14 +171,14 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
                     //resizedBitmap = getResizedBitmap(fetchedBitmap, width, height);
                 } catch (IOException e){
                     e.printStackTrace();
-                }*/
+                }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
 
             }
-        });
+        }); */
     }
 
     @Override
@@ -324,7 +353,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
         mDrawingView.setColor(newColor);
     }
 
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+    public Bitmap myResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;

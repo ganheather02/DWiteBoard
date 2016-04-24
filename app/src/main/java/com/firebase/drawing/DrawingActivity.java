@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.support.v7.app.ActionBarActivity;
 
@@ -192,9 +193,11 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
 
                     Bitmap yourselectedImage = BitmapFactory.decodeFile(filePath);
 
-                    encodedBitmap = encodeToBase64(yourselectedImage);
+                    Bitmap convertedImage = getResizedBitmap(yourselectedImage, 500);
 
-                    mFirebaseRef.push().setValue(encodedBitmap);
+                    encodedBitmap = encodeToBase64(convertedImage);
+
+                    mFirebaseRef.push().setValue(encodedBitmap, "encodedbitmap");
                 }
         }
     }
@@ -246,6 +249,21 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     public static Bitmap decodeFromBase64(String input) throws IOException {
         byte[] decodedByte = com.firebase.client.utilities.Base64.decode(input);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 0) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
     @Override

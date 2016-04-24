@@ -28,7 +28,7 @@ import java.util.Map;
 public class BoardListActivity extends ActionBarActivity {
 
     public static final String TAG = "AndroidDrawing";
-    private static String FIREBASE_URL = "https://doodleboard.firebaseio.com/";
+    private static String FIREBASE_URL = "https://dwiteboardapp.firebaseio.com/";
 
     private Firebase mRef;
     private Firebase mBoardsRef;

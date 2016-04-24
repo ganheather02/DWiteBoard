@@ -19,6 +19,10 @@
               // A thumbnail is allowed, but not required
               ".validate": "newData.isString()"
             },
+             "pictureid": {
+              // A pictureid is allowed, but not required
+              ".validate": "newData.isString()"
+             },
             "$others": {
               // disallow any other children
               ".validate": false

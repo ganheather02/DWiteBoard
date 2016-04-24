@@ -182,6 +182,7 @@ public class BoardListActivity extends ActionBarActivity {
 
         if (id == R.id.deletebutton){
             mBoardsRef.removeValue();
+            mSegmentsRef.removeValue();
         }
 
 

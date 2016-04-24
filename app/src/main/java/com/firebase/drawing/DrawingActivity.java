@@ -25,6 +25,7 @@ import com.firebase.client.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DrawingActivity extends ActionBarActivity implements ColorPickerDialog.OnColorChangedListener {
@@ -40,12 +41,15 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     private Firebase mFirebaseRef; // Firebase base URL
     private Firebase mMetadataRef;
     private Firebase mSegmentsRef;
+
     private ValueEventListener mConnectedListener;
+
     private String mBoardId;
     private int mBoardWidth;
     private int mBoardHeight;
 
     public static String encodedBitmap;
+    public String fetchedString;
 
     /**
      * Called when the activity is first created.
@@ -57,6 +61,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
         final String url = intent.getStringExtra("FIREBASE_URL");
         final String boardId = intent.getStringExtra("BOARD_ID");
         Log.i(TAG, "Adding DrawingView on "+url+" for boardId "+boardId);
+
         mFirebaseRef = new Firebase(url);
         mBoardId = boardId;
         mMetadataRef = mFirebaseRef.child("boardmetas").child(boardId);
@@ -106,6 +111,20 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
                 // No-op
             }
         });
+
+        /*mMetadataRef.addValueEventListener(new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+               fetchedString = dataSnapshot.getValue(String.class);
+
+                Toast.makeText(DrawingActivity.this, "Fetched Picture", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError){
+
+            }
+        }); */
     }
 
     @Override
@@ -197,7 +216,16 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
 
                     encodedBitmap = encodeToBase64(convertedImage);
 
-                    mFirebaseRef.push().setValue(encodedBitmap, "encodedbitmap");
+                    //mMetadataRef.push().setValue(encodedBitmap);
+
+                    mMetadataRef.child("pictureid").setValue(encodedBitmap, new Firebase.CompletionListener(){
+                        @Override
+                        public void onComplete(FirebaseError firebaseError, Firebase firebase) {
+                            if (firebaseError != null) {
+                                Log.e(TAG, "Error updating thumbnail", firebaseError.toException());
+                            }
+                        }
+                    });
                 }
         }
     }

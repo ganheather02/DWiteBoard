@@ -6,10 +6,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +43,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     private Firebase mFirebaseRef; // Firebase base URL
     private Firebase mMetadataRef;
     private Firebase mSegmentsRef;
+    private Firebase mRootRef;
 
     private ValueEventListener mConnectedListener;
 
@@ -48,8 +51,13 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     private int mBoardWidth;
     private int mBoardHeight;
 
-    public static String encodedBitmap;
-    public String fetchedString;
+    public String fetchedPicture;
+    public String encodedBitmap;
+    public Bitmap fetchedBitmap;
+    public Bitmap resizedBitmap;
+
+
+    public static boolean shouldChangeBackground = false;
 
     /**
      * Called when the activity is first created.
@@ -66,6 +74,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
         mBoardId = boardId;
         mMetadataRef = mFirebaseRef.child("boardmetas").child(boardId);
         mSegmentsRef = mFirebaseRef.child("boardsegments").child(mBoardId);
+        mRootRef = new Firebase("https://dwiteboardapp.firebaseio.com");
         mMetadataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -112,19 +121,35 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
             }
         });
 
-        /*mMetadataRef.addValueEventListener(new ValueEventListener(){
+        Firebase picturesRef = mRootRef.child("pictureid");
+        picturesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-               fetchedString = dataSnapshot.getValue(String.class);
-
+                fetchedPicture = dataSnapshot.getValue(String.class);
                 Toast.makeText(DrawingActivity.this, "Fetched Picture", Toast.LENGTH_SHORT).show();
+                String foo = fetchedPicture.substring(0, Math.min(13, fetchedPicture.length()));
+                Toast.makeText(DrawingActivity.this, foo, Toast.LENGTH_SHORT).show();
+                shouldChangeBackground = true;
+                /*try{
+                    fetchedBitmap = decodeFromBase64(fetchedPicture);
+                    //DisplayMetrics metrics = new DisplayMetrics();
+
+                    //getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+                    //int height = metrics.heightPixels;
+                    //int width = metrics.widthPixels;
+
+                    //resizedBitmap = getResizedBitmap(fetchedBitmap, width, height);
+                } catch (IOException e){
+                    e.printStackTrace();
+                }*/
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError){
+            public void onCancelled(FirebaseError firebaseError) {
 
             }
-        }); */
+        });
     }
 
     @Override
@@ -297,5 +322,22 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     @Override
     public void colorChanged(int newColor) {
         mDrawingView.setColor(newColor);
+    }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
     }
 }

@@ -20,6 +20,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.Logger;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,6 +138,28 @@ public class DrawingView extends View {
         mBitmap = Bitmap.createBitmap(Math.round(mCanvasWidth * mScale), Math.round(mCanvasHeight * mScale), Bitmap.Config.ARGB_8888);
         mBuffer = new Canvas(mBitmap);
         Log.i("AndroidDrawing", "onSizeChanged: created bitmap/buffer of "+mBitmap.getWidth()+"x"+mBitmap.getHeight());
+
+
+        if(DrawingActivity.shouldChangeBackground == true){
+
+            super.onSizeChanged(w, h, oldW, oldH);
+            mScale = Math.min(1.0f * w / mCanvasWidth, 1.0f * h / mCanvasHeight);
+            mBitmap = Bitmap.createBitmap(Math.round(mCanvasWidth * mScale), Math.round(mCanvasHeight * mScale), Bitmap.Config.ARGB_8888);
+            mBuffer = new Canvas(mBitmap);
+            Log.i("AndroidDrawing", "onSizeChanged: created bitmap/buffer of " + mBitmap.getWidth() + "x" + mBitmap.getHeight());
+
+            //Bitmap overlay = DrawingActivity.resizedBitmap;
+            //putOverlay(mBitmap, overlay);
+
+
+            DrawingActivity.shouldChangeBackground = false;
+        }
+    }
+
+    public void putOverlay(Bitmap bitmap, Bitmap overlay) {
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+        canvas.drawBitmap(overlay, 0, 0, paint);
     }
 
     @Override

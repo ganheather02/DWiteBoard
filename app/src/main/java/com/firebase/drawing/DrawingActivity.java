@@ -55,7 +55,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
     public String fetchedPicture;
     public String encodedBitmap;
     public Bitmap fetchedBitmap;
-    public Bitmap resizedBitmap;
+    public static Bitmap resizedBitmap;
 
 
     public static boolean shouldChangeBackground = false;
@@ -142,6 +142,7 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    shouldChangeBackground = true;
                 }
             }
 
@@ -190,6 +191,8 @@ public class DrawingActivity extends ActionBarActivity implements ColorPickerDia
             mDrawingView.cleanup();
         }
         this.updateThumbnail(mBoardWidth, mBoardHeight, mSegmentsRef, mMetadataRef);
+
+        shouldChangeBackground = false;
     }
 
 

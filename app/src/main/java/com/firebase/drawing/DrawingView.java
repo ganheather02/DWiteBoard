@@ -148,9 +148,8 @@ public class DrawingView extends View {
             mBuffer = new Canvas(mBitmap);
             Log.i("AndroidDrawing", "onSizeChanged: created bitmap/buffer of " + mBitmap.getWidth() + "x" + mBitmap.getHeight());
 
-            //Bitmap overlay = DrawingActivity.resizedBitmap;
-            //putOverlay(mBitmap, overlay);
-
+            Bitmap overlay = DrawingActivity.resizedBitmap;
+            putOverlay(mBitmap, overlay);
 
             DrawingActivity.shouldChangeBackground = false;
         }

@@ -16,11 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 import android.support.v7.app.ActionBarActivity;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -28,7 +26,6 @@ import com.firebase.client.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 public class DrawingActivity extends ActionBarActivity implements ColorPickerDialog.OnColorChangedListener {

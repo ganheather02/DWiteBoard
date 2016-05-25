@@ -17,7 +17,7 @@ The program's picture uploading function compresses the original picture into a 
 
 ## More About the Author
 
-Jeffrey Lin is currently a freshman based in the San Francisco Bay Area. He has started programming in sixth grade. He is fluent in Java programming and experienced with Linux. His main passion is robotics programming and he has participated in three years of First Tech Challenge and won numerous awards. To check out more information about him visit [here] (https://www.linkedin.com/in/jeffreytech).
+Jeffrey Lin is currently a student based in the San Francisco Bay Area. He started programming in sixth grade. He is fluent in Java programming and experienced with Linux. His main passion is robotics programming and he has participated in three years of First Tech Challenge and has won numerous awards. To check out more information about him visit [here] (https://www.linkedin.com/in/jeffreytech).
 
 ## More about Firebase on Android
 
